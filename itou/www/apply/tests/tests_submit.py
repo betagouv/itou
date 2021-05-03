@@ -161,6 +161,7 @@ class ApplyAsJobSeekerTest(TestCase):
         self.assertEqual(job_application.selected_jobs.count(), 1)
         self.assertEqual(job_application.selected_jobs.first().pk, post_data["selected_jobs"][0])
 
+    # TODO Add a similar test with a GEIQ, this time the rule is bypassed.
     def test_apply_as_jobseeker_with_approval_in_waiting_period(self):
         """Apply as jobseeker with an approval in waiting period."""
 
@@ -372,8 +373,9 @@ class ApplyAsAuthorizedPrescriberTest(TestCase):
         last_url = response.redirect_chain[-1][0]
         self.assertEqual(last_url, reverse("apply:step_eligibility", kwargs={"siae_pk": siae.pk}))
 
+    # TODO Add a similar test still with a GEIQ but with a non authorized prescriber, this time the rule is bypassed.
     def test_apply_to_a_geiq_as_authorized_prescriber(self):
-        """Apply to a GEIC as authorized prescriber."""
+        """Apply to a GEIQ as authorized prescriber."""
 
         siae = SiaeWithMembershipAndJobsFactory(kind=Siae.KIND_GEIQ, romes=("N1101", "N1105"))
 
@@ -849,6 +851,7 @@ class ApplyAsSiaeTest(TestCase):
         self.assertEqual(job_application.selected_jobs.first().pk, post_data["selected_jobs"][0])
         self.assertEqual(job_application.selected_jobs.last().pk, post_data["selected_jobs"][1])
 
+    # TODO Add a similar test with a GEIQ, this time the rule is bypassed.
     def test_apply_as_siae_for_approval_in_waiting_period(self):
         """Apply as SIAE for a job seeker with an approval in waiting period."""
 
