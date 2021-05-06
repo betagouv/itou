@@ -22,14 +22,10 @@ def check_waiting_period(approvals_wrapper, job_application):
     This should be an edge case.
     An approval may expire between the time an application is sent and
     the time it is accepted.
-    An approval in waiting period can only be bypassed if:
-    - the prescriber is authorized
-    - or the structure is not a SIAE
     """
-    bypass_waiting_period_check = (
-        job_application.is_sent_by_authorized_prescriber or not job_application.to_siae.is_subject_to_eligibility_rules
-    )
-    if approvals_wrapper.has_in_waiting_period and not bypass_waiting_period_check:
+    if approvals_wrapper.cannot_bypass_waiting_period(
+        siae=job_application.to_siae, sender_prescriber_organization=job_application.sender_prescriber_organization
+    ):
         error = approvals_wrapper.ERROR_CANNOT_OBTAIN_NEW_FOR_PROXY
         raise PermissionDenied(error)
 

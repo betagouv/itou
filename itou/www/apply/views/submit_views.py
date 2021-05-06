@@ -42,11 +42,9 @@ def get_approvals_wrapper(request, job_seeker, siae):
     user_info = get_user_info(request)
     approvals_wrapper = job_seeker.approvals_wrapper
 
-    # If this is a SIAE, ensure that an existing approval is not in waiting period.
-    # Only "authorized prescribers" can bypass an approval in waiting period.
-    bypass_waiting_period_check = user_info.is_authorized_prescriber or not siae.is_subject_to_eligibility_rules
-
-    if approvals_wrapper.has_in_waiting_period and not bypass_waiting_period_check:
+    if approvals_wrapper.cannot_bypass_waiting_period(
+        siae=siae, sender_prescriber_organization=user_info.prescriber_organization
+    ):
         error = approvals_wrapper.ERROR_CANNOT_OBTAIN_NEW_FOR_PROXY
         if user_info.user == job_seeker:
             error = approvals_wrapper.ERROR_CANNOT_OBTAIN_NEW_FOR_USER
