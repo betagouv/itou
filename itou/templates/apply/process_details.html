@@ -31,6 +31,9 @@
         {% else %}
             <li>Candidature spontanée</li>
         {% endif %}
+        {% if job_application.get_resume_link %}
+            <li><a href="{{ job_application.get_resume_link }}" target="_blank" rel="noopener">Télécharger le CV</a></li>
+        {% endif %}
     </ul>
 
     <div class="alert alert-secondary">

@@ -1,5 +1,12 @@
 {% extends "apply/submit_base.html" %}
 {% load bootstrap4 %}
+{% load i18n %}
+{% load static %}
+
+{% block extra_head %}
+    <!-- Dropzone -->
+    <link rel="stylesheet" type="text/css" href='{% static "vendor/dropzone/dropzone.min.css" %}'>
+{% endblock extra_head %}
 
 {% block content %}
 
@@ -15,6 +22,27 @@
 
         {% bootstrap_field form.message %}
 
+        <label for="resume_form">{{ form.resume_link.label }}</label>
+        <div id="resume_form" class="dropzone border-dashed text-center text-secondary mb-2">
+            <div class="dz-message my-1">
+                <div class="h5">{% include "includes/icon.html" with icon="upload" size="30" %}</div>
+                <div class="h6"><a href="#;">Choisissez un fichier</a> ou <b>glissez ici</b>.</div>
+                <div class="small">Taille maximale : {{ s3_upload_config.max_file_size }} Mo</div>
+                <div class="small">Type de fichier : PDF</div>
+            </a>
+            </div>
+        </div>
+
+        {{ form.resume_link.as_hidden }}
+
+        <p class="small mt-0">
+            {% include "includes/icon.html" with icon="help-circle" size="16" class="mr-1" %}
+            Ce CV n'est pas un PDF ?
+            <a href="https://doc.inclusion.beta.gouv.fr/mon-mode-demploi-prescripteur/postuler-pour-un-candidat#ajouter-un-cv-a-la-candidature" target="_blank" rel="noopener">
+                Découvrez comment le convertir.
+            </a>
+        </p>
+
         {% buttons %}
             <button type="submit" class="btn btn-primary">
                 {% if request.user.is_siae_staff %}
@@ -27,4 +55,12 @@
 
     </form>
 
+{% endblock %}
+
+{% block script %}
+    {{ block.super }}
+    <!-- Needed to use the Datepicker JS widget. -->
+    {{ form.media }}
+
+    {% include "storage/s3_upload.html" with callback_location_selector="input#id_resume_link" dropzone_selector="#resume_form" s3_form_values=s3_form_values s3_upload_config=s3_upload_config %}
 {% endblock %}
