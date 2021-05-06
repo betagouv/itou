@@ -174,6 +174,17 @@ class JobApplicationQuerySet(models.QuerySet):
             .order_by("-month")
         )
 
+    def eligible_as_employee_record(self, siae):
+        """
+        List job applications that will have to be transfered to ASP
+        via the employee record app.
+
+        These job applications must:
+        - be definitely accepted (hiring can't be cancelled)
+        - have generated a new approval (not attached to an old one)
+        """
+        return self.exclude(approval=None).filter(to_siae=siae).accepted().select_related("job_seeker", "approval")
+
 
 class JobApplication(xwf_models.WorkflowEnabled, models.Model):
     """

@@ -161,11 +161,15 @@ class Siae(AddressMixin):  # Do not forget the mixin!
     # These kinds and only these kinds thus have convention/AF logic.
     ASP_MANAGED_KINDS = [KIND_EI, KIND_AI, KIND_ACI, KIND_ETTI, KIND_EITI]
 
+    # These kinds of SIAE can use employee record app to send data to ASP
+    ASP_EMPLOYEE_RECORD_KINDS = [KIND_EI, KIND_ACI, KIND_AI, KIND_ETTI]
+
+    siret = models.CharField(verbose_name="Siret", max_length=14, validators=[validate_siret], db_index=True)
+
     # https://code.travail.gouv.fr/code-du-travail/l5132-4
     # https://www.legifrance.gouv.fr/eli/loi/2018/9/5/2018-771/jo/article_83
     ELIGIBILITY_REQUIRED_KINDS = ASP_MANAGED_KINDS + [KIND_ACIPHC]
 
-    siret = models.CharField(verbose_name="Siret", max_length=14, validators=[validate_siret], db_index=True)
     naf = models.CharField(verbose_name="Naf", max_length=5, validators=[validate_naf], blank=True)
     kind = models.CharField(verbose_name="Type", max_length=6, choices=KIND_CHOICES, default=KIND_EI)
     name = models.CharField(verbose_name="Nom", max_length=255)
@@ -437,6 +441,13 @@ class Siae(AddressMixin):  # Do not forget the mixin!
     @property
     def grace_period_has_expired(self):
         return not self.is_active and timezone.now() > self.grace_period_end_date
+
+    @property
+    def can_use_employee_record(self):
+        """
+        Check if this SIAE can use the employee record app
+        """
+        return self.kind in self.ASP_EMPLOYEE_RECORD_KINDS
 
     def convention_can_be_accessed_by(self, user):
         """
